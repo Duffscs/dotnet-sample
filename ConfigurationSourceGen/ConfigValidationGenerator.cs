@@ -1,0 +1,31 @@
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Linq;
+
+namespace ConfigurationSourceGen;
+
+[Generator]
+public partial class ConfigValidationGenerator : IIncrementalGenerator {
+    public void Initialize(IncrementalGeneratorInitializationContext context) {
+        IncrementalValuesProvider<ToGenerateClass> toGenerateClasses = context.SyntaxProvider
+            .CreateSyntaxProvider(
+                static (s, _) => IsTargetForGeneration(s),
+                static (ctx, _) => PrepareClassData(ctx))
+            .Where(e => e is not null)!
+            .Select(static (c, _) => c!);
+
+        context.RegisterSourceOutput(toGenerateClasses, static (spc, all) => Execute(spc, all));
+    }
+
+    private static bool IsTargetForGeneration(SyntaxNode node) {
+        return node is TypeDeclarationSyntax tds && tds.AttributeLists.Count > 0 &&
+               node is ClassDeclarationSyntax or RecordDeclarationSyntax;
+    }
+
+    private static void Execute(SourceProductionContext context, ToGenerateClass cls) {
+        string code = GenerateRawClass(cls);
+        string ns = cls.Namespace.Replace("::", "");
+        string hint = $"{ns}.{cls.Name}.Raw.g.cs".Replace('<', '_').Replace('>', '_');
+        context.AddSource(hint, code);
+    }
+}

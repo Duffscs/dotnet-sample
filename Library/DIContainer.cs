@@ -193,7 +193,7 @@ public class DIContainer(IServiceCollection services) {
     /// <summary>
     /// Retourne une instance par son identifiant.
     /// </summary>
-    public T Get<T>(string id) 
+    public T Get<T>(string id)
         => (T?)_objects.GetValueOrDefault(id) ?? throw new InvalidOperationException($"L'objet '{id}' n'existe pas ou n'a pas pu être instancié.");
 
     private object EnsureCreated(string id) {

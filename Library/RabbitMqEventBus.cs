@@ -23,6 +23,7 @@ public record ConnectionManager(
         while (ConsumerChannels.TryTake(out IChannel? c))
             c.Dispose();
         Connection.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
 
@@ -159,7 +160,7 @@ public class RabbitMqEventBus : IDisposable {
             ulong deliveryTag = ea.DeliveryTag;
             _ = Task.Run(async () => {
                 try {
-                    if(_pendingRequests.TryRemove(props.CorrelationId ?? string.Empty, out TaskCompletionSource<string>? tcs)) {
+                    if (_pendingRequests.TryRemove(props.CorrelationId ?? string.Empty, out TaskCompletionSource<string>? tcs)) {
                         tcs.SetResult(json);
                         return;
                     }

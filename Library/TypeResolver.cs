@@ -1,8 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 
 namespace Library;
+
 public static class TypeResolver {
 
     private static readonly Dictionary<string, Type> commonTypes = new() {
@@ -53,7 +53,7 @@ public static class TypeResolver {
         int genStart = typeName.IndexOf('<');
         if (genStart != -1) {
             string baseName = typeName[..genStart];
-            if(genericType.TryGetValue(baseName, out string? commonFullName))
+            if (genericType.TryGetValue(baseName, out string? commonFullName))
                 baseName = commonFullName.Split("`")[0];
             string argsPart = typeName[(genStart + 1)..^1]; // contenu entre <...>
 
