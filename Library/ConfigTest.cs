@@ -1,6 +1,7 @@
 ﻿using Library;
 using Test;
 using System.Xml.Serialization;
+using ConfigurationSourceGen.Attributes;
 
 [GenerateConfigValidation]
 public class Config {
@@ -14,6 +15,7 @@ namespace Library {
         [XmlAttribute]
         public int Port { get; set; }
         [XmlAttribute]
+        [Range(0, 50)]
         public int? Port2 { get; set; }
         [XmlAttribute]
         public bool? Enabled { get; set; }
